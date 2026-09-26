@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel restaurante | PambaGo!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Poppins", "sans-serif"] },
+          colors: {
+            primary: "#8cc63f",
+            primaryHover: "#7ab133",
+            secondary: "#104b4e",
+            dark: "#0d383a",
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="min-h-screen bg-gray-50 font-sans text-gray-800">
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="../index.html"><img src="logo-pambago.jpg" alt="PambaGo" class="h-10 w-auto object-contain"></a>
+      <div class="flex items-center gap-4">
+        <a href="../cliente/index.html" class="text-sm font-medium text-secondary hover:text-primary">Ver menú cliente</a>
+        <span class="text-xs font-semibold text-white bg-secondary px-3 py-1 rounded-full">Restaurante</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+    <div>
+      <h1 class="text-3xl font-bold text-dark">Panel del día</h1>
+      <p class="text-gray-600">Publica el menú (sopa, fuerte, bebida) y sigue las reservas anticipadas.</p>
+    </div>
+
+    <section class="grid md:grid-cols-3 gap-4">
+      <div class="bg-white rounded-2xl p-5 border border-gray-100">
+        <p class="text-sm text-gray-500">Pedidos de hoy</p>
+        <p id="kpiPedidos" class="text-3xl font-bold text-dark">0</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-gray-100">
+        <p class="text-sm text-gray-500">Almuerzos reservados</p>
+        <p id="kpiPlatos" class="text-3xl font-bold text-dark">0</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-gray-100">
+        <p class="text-sm text-gray-500">Total estimado</p>
+        <p id="kpiTotal" class="text-3xl font-bold text-primary">$0</p>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+      <h2 class="text-xl font-bold text-dark mb-4">Publicar menú</h2>
+      <form id="formMenu" class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Restaurante</label>
+          <input name="restaurante" required class="w-full px-4 py-2.5 border rounded-xl">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Precio del almuerzo</label>
+          <input type="number" step="0.25" min="1" name="precio" required class="w-full px-4 py-2.5 border rounded-xl">
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-1">Sopa</label>
+          <input name="sopa" required class="w-full px-4 py-2.5 border rounded-xl">
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-1">Platos fuertes (nombre y porciones, uno por línea: Seco de pollo,20)</label>
+          <textarea name="fuertes" rows="4" required class="w-full px-4 py-2.5 border rounded-xl"></textarea>
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-1">Bebida</label>
+          <input name="bebida" required class="w-full px-4 py-2.5 border rounded-xl">
+        </div>
+        <div class="md:col-span-2">
+          <button class="bg-primary text-white font-bold px-6 py-3 rounded-xl hover:bg-primaryHover">Guardar menú del día</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+      <h2 class="text-xl font-bold text-dark mb-4">Reservas de hoy</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-gray-500 border-b">
+              <th class="py-2">Hora</th>
+              <th>Cliente</th>
+              <th>Plato</th>
+              <th>Cant.</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tabla"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="../shared.js"></script>
+  <script>
+    const form = document.getElementById("formMenu");
+
+    function pintarMenu(menu) {
+      form.restaurante.value = menu.restaurante;
+      form.precio.value = menu.precio;
+      form.sopa.value = menu.sopa;
+      form.bebida.value = menu.bebida;
+      form.fuertes.value = menu.fuertes.map((f) => f.nombre + "," + f.porciones).join("\n");
+    }
+
+    function pintarPedidos() {
+      const pedidos = pedidosDeHoy();
+      const platos = pedidos.reduce((a, p) => a + Number(p.cantidad), 0);
+      const total = pedidos.reduce((a, p) => a + Number(p.total), 0);
+      document.getElementById("kpiPedidos").textContent = pedidos.length;
+      document.getElementById("kpiPlatos").textContent = platos;
+      document.getElementById("kpiTotal").textContent = "$" + total.toFixed(2);
+
+      const tabla = document.getElementById("tabla");
+      tabla.innerHTML = pedidos.length
+        ? pedidos
+            .sort((a, b) => a.hora.localeCompare(b.hora))
+            .map(
+              (p) => `
+            <tr class="border-b">
+              <td class="py-3 font-semibold">${p.hora}</td>
+              <td>${p.nombre}</td>
+              <td>${p.fuerte}</td>
+              <td>${p.cantidad}</td>
+              <td>$${Number(p.total).toFixed(2)}</td>
+              <td><span class="text-xs bg-green-50 text-secondary px-2 py-1 rounded-full">${p.estado}</span></td>
+            </tr>`
+            )
+            .join("")
+        : `<tr><td colspan="6" class="py-6 text-gray-500">Aún no hay reservas hoy.</td></tr>`;
+    }
+
+    pintarMenu(leerMenu());
+    pintarPedidos();
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const fuertes = String(data.get("fuertes"))
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const [nombre, porciones] = line.split(",");
+          return { nombre: nombre.trim(), porciones: Number(porciones || 10) };
+        });
+      guardarMenu({
+        restaurante: data.get("restaurante"),
+        fecha: new Date().toISOString().slice(0, 10),
+        precio: Number(data.get("precio")),
+        sopa: data.get("sopa"),
+        fuertes,
+        bebida: data.get("bebida"),
+      });
+      alert("Menú del día publicado.");
+      pintarPedidos();
+    });
+  </script>
+</body>
+</html>

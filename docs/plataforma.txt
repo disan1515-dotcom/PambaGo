@@ -1,0 +1,20 @@
+PambaGo — plataforma de reservas de almuerzo diario
+====================================================
+Fuente: landing trabajada en Claude (PambaGo Web) + logo de esta carpeta.
+
+Propuesta
+  Almuerzos saludables en equipo. Los restaurantes publican el menú del día,
+  reciben pedidos/reservas anticipadas y reducen desperdicio de comida.
+
+Flujos
+  1. Restaurante publica sopa, plato fuerte y bebida (desde el celular, ~2 min).
+  2. Cliente ve el menú por QR o enlace y reserva/pide antes de llegar.
+  3. Panel del restaurante: pedidos del día, porciones y ganancias.
+
+Módulos de esta carpeta
+  marca/           Logo y tokens de color del prototipo Claude.
+  web-landing/     Sitio comercial (planes Básico $29 / Pro $49 / Cadenas $79).
+  plataforma/      Prototipo local Cliente + Restaurante (mismo menú y pedidos).
+
+Contacto del prototipo: restaurantes@pambago.com  |  Ecuador (+593)
+Prueba: 14 días. Colores: #8cc63f (Go) / #104b4e (Pamba) / #0d383a.

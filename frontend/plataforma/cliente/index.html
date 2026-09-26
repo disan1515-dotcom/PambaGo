@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar almuerzo | PambaGo!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Poppins", "sans-serif"] },
+          colors: {
+            primary: "#8cc63f",
+            primaryHover: "#7ab133",
+            secondary: "#104b4e",
+            dark: "#0d383a",
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="min-h-screen bg-gray-50 font-sans text-gray-800">
+  <header class="bg-white shadow-sm sticky top-0 z-10">
+    <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="../index.html"><img src="logo-pambago.jpg" alt="PambaGo" class="h-10 w-auto object-contain"></a>
+      <span class="text-xs font-semibold text-secondary bg-green-50 px-3 py-1 rounded-full">Menú del día</span>
+    </div>
+  </header>
+
+  <main class="max-w-lg mx-auto px-4 py-8">
+    <p id="meta" class="text-sm text-gray-500 mb-2"></p>
+    <h1 id="titulo" class="text-3xl font-bold text-dark mb-1">Almuerzo de hoy</h1>
+    <p id="precio" class="text-primary font-bold text-lg mb-8"></p>
+
+    <form id="formReserva" class="space-y-5 bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+      <div>
+        <label class="block text-sm font-medium mb-1">Tu nombre</label>
+        <input name="nombre" required class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-primary" placeholder="Ej. Diego">
+      </div>
+      <div>
+        <p class="text-sm font-medium mb-1">Sopa</p>
+        <p id="sopa" class="text-dark font-semibold"></p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-2">Plato fuerte</label>
+        <div id="fuertes" class="space-y-2"></div>
+      </div>
+      <div>
+        <p class="text-sm font-medium mb-1">Bebida</p>
+        <p id="bebida" class="text-dark font-semibold"></p>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium mb-1">Cantidad</label>
+          <input type="number" name="cantidad" min="1" max="10" value="1" required class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-primary">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Hora de llegada</label>
+          <input type="time" name="hora" value="12:30" required class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-primary">
+        </div>
+      </div>
+      <button type="submit" class="w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-primaryHover transition">Reservar almuerzo</button>
+    </form>
+
+    <p id="ok" class="hidden mt-6 text-center bg-green-50 text-secondary font-semibold rounded-2xl p-4"></p>
+  </main>
+
+  <script src="../shared.js"></script>
+  <script>
+    const menu = leerMenu();
+    document.getElementById("meta").textContent = menu.restaurante + " · " + menu.fecha;
+    document.getElementById("precio").textContent = "$" + Number(menu.precio).toFixed(2) + " por almuerzo";
+    document.getElementById("sopa").textContent = menu.sopa;
+    document.getElementById("bebida").textContent = menu.bebida;
+
+    const fuertesBox = document.getElementById("fuertes");
+    menu.fuertes.forEach((f, i) => {
+      const id = "fuerte-" + i;
+      fuertesBox.insertAdjacentHTML("beforeend", `
+        <label class="flex items-center justify-between gap-3 border rounded-xl px-4 py-3 cursor-pointer hover:border-primary">
+          <span class="flex items-center gap-3">
+            <input type="radio" name="fuerte" value="${f.nombre}" ${i === 0 ? "checked" : ""} required>
+            <span>${f.nombre}</span>
+          </span>
+          <span class="text-xs text-gray-500">${f.porciones} porciones</span>
+        </label>
+      `);
+    });
+
+    document.getElementById("formReserva").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(e.target);
+      const fuerte = data.get("fuerte");
+      const cantidad = Number(data.get("cantidad"));
+      const plato = menu.fuertes.find((f) => f.nombre === fuerte);
+      if (!plato || plato.porciones < cantidad) {
+        alert("No hay suficientes porciones de ese plato.");
+        return;
+      }
+      plato.porciones -= cantidad;
+      guardarMenu(menu);
+
+      const pedidos = leerPedidos();
+      pedidos.push({
+        id: Date.now(),
+        fecha: new Date().toISOString().slice(0, 10),
+        nombre: data.get("nombre"),
+        sopa: menu.sopa,
+        fuerte,
+        bebida: menu.bebida,
+        cantidad,
+        hora: data.get("hora"),
+        total: cantidad * Number(menu.precio),
+        estado: "reservado",
+      });
+      guardarPedidos(pedidos);
+
+      const ok = document.getElementById("ok");
+      ok.textContent = "Reserva lista. Te esperamos a las " + data.get("hora") + ".";
+      ok.classList.remove("hidden");
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

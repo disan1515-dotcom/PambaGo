@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PambaGo! | Plataforma</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Poppins", "sans-serif"] },
+          colors: {
+            primary: "#8cc63f",
+            primaryHover: "#7ab133",
+            secondary: "#104b4e",
+            dark: "#0d383a",
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="min-h-screen bg-[#f7fdf4] font-sans text-gray-800">
+  <header class="bg-white shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <img src="cliente/logo-pambago.jpg" alt="PambaGo" class="h-12 w-auto object-contain">
+      <a href="../web-landing/index.html" class="text-sm font-medium text-secondary hover:text-primary">Sitio comercial</a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-16">
+    <p class="text-secondary font-semibold mb-2">Reservas de almuerzo diario</p>
+    <h1 class="text-4xl font-bold text-dark mb-3">Elige tu entrada</h1>
+    <p class="text-gray-600 mb-10 max-w-2xl">Prototipo local según el flujo de PambaGo: el restaurante publica el menú del día y el cliente reserva antes de llegar.</p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <a href="cliente/index.html" class="block bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-0.5 transition">
+        <p class="text-sm font-semibold text-primary mb-2">Cliente</p>
+        <h2 class="text-2xl font-bold text-dark mb-2">Ver menú y reservar</h2>
+        <p class="text-gray-600">QR / enlace: sopa, plato fuerte, bebida y hora de llegada.</p>
+      </a>
+      <a href="restaurante/index.html" class="block bg-secondary text-white rounded-3xl p-8 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition">
+        <p class="text-sm font-semibold text-primary mb-2">Restaurante</p>
+        <h2 class="text-2xl font-bold mb-2">Publicar menú y pedidos</h2>
+        <p class="text-green-100">Panel del día: porciones, reservas y total estimado.</p>
+      </a>
+    </div>
+  </main>
+</body>
+</html>

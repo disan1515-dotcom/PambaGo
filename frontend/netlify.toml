@@ -1,0 +1,25 @@
+[build]
+  publish = "."
+  command = "echo 'Static site - no build needed'"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production]
+  environment = { REACT_APP_API_URL = "https://pambago-api.railway.app" }
+
+[context.deploy-preview]
+  environment = { REACT_APP_API_URL = "https://pambago-api-preview.railway.app" }
+
+[context.branch-deploy]
+  environment = { REACT_APP_API_URL = "http://localhost:5000" }
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "max-age=3600"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
