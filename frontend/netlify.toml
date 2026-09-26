@@ -8,13 +8,13 @@
   status = 200
 
 [context.production]
-  environment = { REACT_APP_API_URL = "https://pambago-api.railway.app" }
+  environment = { REACT_APP_API_URL = "https://pambago-api.railway.app", REACT_APP_STRIPE_PUBLIC_KEY = "pk_live_your_stripe_key" }
 
 [context.deploy-preview]
-  environment = { REACT_APP_API_URL = "https://pambago-api-preview.railway.app" }
+  environment = { REACT_APP_API_URL = "https://pambago-api-preview.railway.app", REACT_APP_STRIPE_PUBLIC_KEY = "pk_test_your_stripe_key" }
 
 [context.branch-deploy]
-  environment = { REACT_APP_API_URL = "http://localhost:5000" }
+  environment = { REACT_APP_API_URL = "http://localhost:5000", REACT_APP_STRIPE_PUBLIC_KEY = "pk_test_your_stripe_key" }
 
 [[headers]]
   for = "/*"
